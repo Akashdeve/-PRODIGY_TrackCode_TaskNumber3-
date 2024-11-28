@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic-Tac-Toe Game</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f7f7f7;
+    }
+
+    .game-container {
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 5px;
+      margin: 0 auto;
+    }
+
+    .cell {
+      width: 100px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2em;
+      border: 2px solid #333;
+      background-color: #fff;
+      cursor: pointer;
+    }
+
+    .cell.taken {
+      pointer-events: none;
+    }
+
+    .message {
+      margin-top: 20px;
+      font-size: 1.2em;
+    }
+
+    .reset-btn {
+      margin-top: 20px;
+      padding: 10px 20px;
+      font-size: 1.1em;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+
+    .reset-btn:hover {
+      background-color: #45a049;
+    }
+
+    .draw {
+      color: #FF6347;
+    }
+
+    .win {
+      color: #4CAF50;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-container">
+    <h1>Tic-Tac-Toe Game</h1>
+    <div class="board" id="board"></div>
+    <div class="message" id="message"></div>
+    <button class="reset-btn" id="reset-btn">Restart Game</button>
+  </div>
+
+  <script>
+    const boardElement = document.getElementById("board");
+    const messageElement = document.getElementById("message");
+    const resetButton = document.getElementById("reset-btn");
+    let board = ['', '', '', '', '', '', '', '', ''];
+    let currentPlayer = 'X';
+    let isGameActive = true;
+
+    // Initialize the board
+    function initializeBoard() {
+      board = ['', '', '', '', '', '', '', '', ''];
+      currentPlayer = 'X';
+      isGameActive = true;
+      messageElement.textContent = `Player ${currentPlayer}'s turn`;
+
+      boardElement.innerHTML = '';
+      for (let i = 0; i < 9; i++) {
+        const cell = document.createElement('div');
+        cell.classList.add('cell');
+        cell.addEventListener('click', () => handleCellClick(i));
+        boardElement.appendChild(cell);
+      }
+    }
+
+    // Handle cell click event
+    function handleCellClick(index) {
+      if (board[index] !== '' || !isGameActive) return;
+
+      board[index] = currentPlayer;
+      const cell = boardElement.children[index];
+      cell.textContent = currentPlayer;
+      cell.classList.add('taken');
+
+      if (checkWin()) {
+        messageElement.textContent = `Player ${currentPlayer} wins!`;
+        messageElement.classList.add('win');
+        isGameActive = false;
+      } else if (board.every(cell => cell !== '')) {
+        messageElement.textContent = 'It\'s a draw!';
+        messageElement.classList.add('draw');
+        isGameActive = false;
+      } else {
+        currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+        messageElement.textContent = `Player ${currentPlayer}'s turn`;
+      }
+    }
+
+    // Check for winning conditions
+    function checkWin() {
+      const winPatterns = [
+        [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+        [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+        [0, 4, 8], [2, 4, 6] // Diagonals
+      ];
+
+      return winPatterns.some(pattern => {
+        const [a, b, c] = pattern;
+        return board[a] && board[a] === board[b] && board[a] === board[c];
+      });
+    }
+
+    // Reset the game
+    resetButton.addEventListener('click', initializeBoard);
+
+    // Start the game
+    initializeBoard();
+  </script>
+</body>
+</html>
